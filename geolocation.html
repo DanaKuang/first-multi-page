@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Cache-Control" content="no-cache"/>
+    <title>验真服务平台</title>
+    <script src="https://weiopn.oss-cn-beijing.aliyuncs.com/common/s_public.js"></script>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+</head>
+<body>
+<script src="https://weiopn.oss-cn-beijing.aliyuncs.com/lib/sao_2.1.4jquery.min.js"></script>
+<script>
+    var weixin_token = {};
+    var getQueryString = function (name) {
+        // a=b
+        var reg = new RegExp("(?:^|&)" + name + "=([^&]*)(?:&|$)", "i"),
+        str_arr = window.location.search.substr(1).match(reg);
+        return str_arr != null ? str_arr[1] : null;
+    }
+    sessionStorage.setItem('token', getQueryString('token'));
+    // 获取js-sdk
+    $.ajax({
+        method: 'post',
+        url: '/wx/jsapi',
+        headers: {
+            token: getQueryString('token')
+        },
+        data: {
+            url: location.pathname.substr(1) + location.search
+        },
+        success: function (res) {
+            // 拿到appid等信息
+            res = JSON.parse(res);
+            weixin_token.appid = res.appId;
+            weixin_token.noncestr = res.nonceStr;
+            weixin_token.timestamp = res.timestamp;
+            weixin_token.signature = res.signature;
+
+            wx.config({
+                debug: false, //
+                appId: weixin_token.appid, // 必填，公众号的唯一标识
+                timestamp: weixin_token.timestamp, // 必填，生成签名的时间戳
+                nonceStr: weixin_token.noncestr, // 必填，生成签名的随机串
+                signature: weixin_token.signature,// 必填，签名，见附录1
+                jsApiList: [
+                    'getLocation'
+                ] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+
+            wx.ready(function () {
+                wx.getLocation({
+                    type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                    success: function (res) {
+                        var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+                        var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+                        
+                        sendLocation(longitude, latitude)
+                    },
+                    cancel: function (res) {
+                        sendLocation()
+                    },
+                    fail: function (res) {
+                        sendLocation()
+                    }
+                })
+            })
+
+            wx.error(function (res) {
+                sendLocation()
+            })
+        }
+    })
+
+    function sendLocation(lon, lat) {
+        location.href = "/scan/location?lon=" + lon + "&lat=" + lat + '&token=' + sessionStorage.getItem('token');
+    }
+
+    
+</script>
+</body>
+</html>
