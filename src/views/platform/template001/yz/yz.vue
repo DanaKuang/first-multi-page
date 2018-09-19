@@ -13,9 +13,9 @@
 
         <nav>
             <ul>
-                <li v-for="(item,idx) in navlist">
+                <li v-for="(item, idx) in navlist" :key="idx">
                     <a :href="item.path">
-                        <img :key="idx" :src="item.src" alt="">
+                        <img :src="item.src" alt="">
                         <span>{{item.name}}</span>
                     </a>
                 </li>
@@ -63,12 +63,12 @@
                 this.getActivity()
             ]).then(([result, page, actlist]) => {
                 var content = JSON.parse(page.conf);
-                
+                console.log(content)
                 document.title = content.fulfilled.title.name;
                 sessionStorage.setItem('info', JSON.stringify(result.data));
                 this.fulfilled = content.fulfilled;
                 this.unfulfilled = content.unfulfilled;
-                delete content.fulfilled.title;
+                // delete content.fulfilled.title;
                 if (result.code == 200) {
                     this.fulfilledFlag = true;
                     this.showPage(content.fulfilled, true, result.data, actlist.data);
@@ -118,17 +118,22 @@
                         if (i === 0) {
                             this.A = n;
                             this.contentA = this.merge(n, _content, yzCont, actList);
+                            console.log(this.contentA)
                         } else if (i === 1) {
                             this.B = n;
                             this.contentB = this.merge(n, _content, yzCont, actList);
+                            console.log(this.contentB)
                         } else if (i === 2) {
                             this.C = n;
                             this.contentC = this.merge(n, _content, yzCont, actList);
+                            console.log(this.contentC)
                         }
                     })
                 } else {
                     this.contentM = content.unscantop;
                     this.contentN = this.fulfilled.qrcode;
+                    console.log(this.contentM)
+                    console.log(this.contentN)
                 }
             },
             merge(n, _content, yzCont, actList) {
