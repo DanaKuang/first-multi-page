@@ -7,8 +7,8 @@
             <div class="act-con">
               <p class="title">{{item.actName}}</p>
               <p class="desc">{{item.actDesc}}</p>
-              <span class="state" v-if="item.drawed">已参加</span>
-              <span class="state" v-else>未参加</span>
+              <!-- <span class="state" v-if="item.drawed">已参加</span>
+              <span class="state" v-else>未参加</span> -->
             </div>
             <div class="act-img">
               <img :src="item.banner" alt="">
@@ -45,14 +45,9 @@ export default {
     }
   },
   created() {
-    // Promise.all([this.getActList(), this.getJSON(), this.getUserInfo()]).then(
-    // ([actList, page, user]) => {
     Promise.all([this.getActList()]).then(([actList]) => {
-      const content = JSON.parse(page.conf)
-      // console.log(content)
       if (actList.code === '200') {
         if (actList.data.length > 0) {
-          this.isJoin(actList.data)
           this.actList = actList.data
           this.hasActivity = true
         } else {
@@ -69,28 +64,12 @@ export default {
           resolve(res)
         })
       })
-    },
-    // 获取oss的JSON文件
-    // getJSON() {
-    //   return new Promise((resolve, reject) => {
-    //     this.Fetch.get('/tpl/scanCodeCheckConf').then(res => {
-    //       resolve(res)
-    //     })
-    //   })
-    // },
+    }
     // 获取参与情况
-    isJoin(list) {
-      list.forEach((item, index) => {
-        this.Fetch.get('/act/pr/jinfo', { actCode: item.actCode }).then(res => {
-          Object.assign(list[index], res.data)
-        })
-      })
-    },
-    // 用户个人信息
-    // getUserInfo() {
-    //   return new Promise((resolve, reject) => {
-    //     this.Fetch.get('/user/info').then(res => {
-    //       resolve(res)
+    // isJoin(list) {
+    //   list.forEach((item, index) => {
+    //     this.Fetch.get('/act/pr/jinfo', { actCode: item.actCode }).then(res => {
+    //       Object.assign(list[index], res.data)
     //     })
     //   })
     // }
