@@ -47,6 +47,7 @@ export default {
   created() {
     Promise.all([this.getActList()]).then(([actList]) => {
       if (actList.code === '200') {
+          console.log(actList)
         if (actList.data.length > 0) {
           this.actList = actList.data
           this.hasActivity = true
