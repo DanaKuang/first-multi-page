@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <!-- <div>
       <valiadate-alert v-if="valiadateFlag" @getcode="handleGetCode" @submitcode="handleSubmitCode" :msg="message" @handlecannel="handleCannelBtn"></valiadate-alert>
         <alert-dialog :constants='constants' ref="alert" @alertFn = 'alertFn'></alert-dialog>
         <crCode :codeImg='codeImg' v-if="codeFlag" @codeClose = "codeClose"></crCode>
@@ -8,9 +8,9 @@
             <img :src="conf && conf.img && conf.img.title.url" alt="" class="title">
             <img :src="conf && conf.img && conf.img.tips.url" alt="" class="tips" @click="state.page = 2, state.tab = 1">
             <img v-for="(item, index) in conf.img" :key="item.title" :src="item.url" alt="" v-if="['bg', 'award', 'noAward', 'tips', 'title'].indexOf(index) == -1" :class="index" @click="draw(index)">
-        </div>
+        </div> -->
         <!-- 第二页 => 活动说明页 -->
-        <div class="page page-cover page2" v-if="state.page == 2">
+        <!-- <div class="page page-cover page2" v-if="state.page == 2">
             <div class="close" @click="state.page = 1"><span>×</span></div>
             <div class="page-tab">
                 <div class="tab tab1" :class="{'bg-gray': state.tab == 1}" @click="state.tab = 1"><span>活动说明</span></div>
@@ -45,15 +45,15 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- 第三页 => 中奖/未中奖页 -->
-        <div class="page page-cover page3" v-if="state.page == 3">
+        <!-- <div class="page page-cover page3" v-if="state.page == 3">
             <div class='close' @click="state.page = 1">×</div>
             <div v-if="state.award == true">
               <img class="award-title" src="https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/award-text.png" alt="">
-              <div class="award-img"><img :src='drawData.awdPic' alt=""></div>
+              <div class="award-img"><img :src='drawData.awdPic' alt=""></div> -->
               <!-- <img class="award-shine" src="https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/award-shine.png" alt=""> -->
-              <p class="award-name"><span>{{drawData.prizeName}}</span></p>
+              <!-- <p class="award-name"><span>{{drawData.prizeName}}</span></p>
               <p class="get-award-tips">请在{{drawData.expireTime}}前领取</p>
               <button class="get-btn" @click="gotoReceive(drawData)">立即领取</button>
             </div>
@@ -62,272 +62,273 @@
               <p><span>很遗憾，未中奖</span></p>
               <button @click="state.page = 1">知道了！</button>
             </div>
-        </div>
+        </div> -->
         <!-- 第四页 => 活动说明页 -->
-        <div class="page page-cover page4" v-if="state.page == 4"></div>
+        <!-- <div class="page page-cover page4" v-if="state.page == 4"></div> -->
         <!-- 第五页 => 活动说明页 -->
-        <div class="page page5" v-if="state.page == 5"></div>
-    </div>
+        <!-- <div class="page page5" v-if="state.page == 5"></div>
+    </div> -->
 </template>
 <script>
 //ACT-2PE2C11NS2S5
-import { getQueryString } from "lib/utils.js";
-import $ from "jquery";
-import valiadateAlert from "components/valiadate.directive"; //手机号弹框
-import alertDialog from "components/alert.directive"; //alert confirm 弹框
-import crCode from "components/crCode.directive"; //关注二维码弹框
-export default {
-  name: "Yuanbao",
-  data() {
-    return {
-      name: "yuanbao",
-      conf: {},
-      state: { page: 1, tab: 1, award: false },
-      notes: [
-        "1. 每个包装打开后扫描二维码，每个二维码仅能参加一次活动。",
-        "2. 每位用户每场仅限参与1次，活动倒计时完毕后，活动页面将开始掉落红包，点击红包中奖。",
-        "3. 奖品为鼓励金，金额自1.88-188.00元不等，随机抽取红包中奖。",
-        "4. 每场红包雨120分钟，120分钟后活动结束。",
-        "5. 鼓励金发放完毕后红包雨活动将结束。",
-        "6. 红包领取成功后直接转账到微信钱包，到账时间为点击领取后30分钟之内。",
-        "7. 本次活动在法律法规范围内的解释权归属于本平台所有。"
-      ],
-      actCode: getQueryString("actCode"),
-      valiadateFlag: false,
-      constants: {
-        title: "提示",
-        msg: "",
-        type: "alert",
-        text: ["确定"]
-      },
-      codeFlag: false,
-      canDraw: false,
-      myAward: null,
-      ticket: "",
-      drawData: "",
-      message: ""
-    };
-  },
-  components: {
-    alertDialog,
-    valiadateAlert,
-    crCode
-  },
-  created() {
-    this.Fetch.get("/act/info", { actCode: this.actCode }).then(res => {
-      if (res.code == "200") {
-        this.actDesc = res.data.actDesc;
-        this.Fetch.get(res.data.confUrl).then(res => {
-          this.conf = res;
-          document.title = this.conf.title;
-        });
-      }
-    });
-  },
-  mounted: function() {
-    setTimeout(() => {
-      this.getJinfo();
-    }, 100);
-  },
-  computed: {},
-  methods: {
-    getJinfo() {
-      let _this = this;
-      this.Fetch.get("/act/pr/jinfo", { actCode: this.actCode }).then(res => {
-        if (res.code === "200") {
-          if (!res.data.canDraw) {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: res.data.showMsg,
-              type: "alert",
-              text: ["知道了！"]
-            };
-            this.canDraw = false;
-            return;
-          }
-          if (res.data.drawed) {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: res.data.showMsg,
-              type: "alert",
-              text: ["知道了！"]
-            };
-            this.canDraw = false;
-            return;
-          }
-          this.canDraw = true;
-          this.ticket = res.data.ticket;
-        }
-      });
-    },
-    draw(who) {
-      if (!this.canDraw) {
+// import { getQueryString } from "lib/utils.js";
+// import $ from "jquery";
+// import valiadateAlert from "components/valiadate.directive"; //手机号弹框
+// import alertDialog from "components/alert.directive"; //alert confirm 弹框
+// import crCode from "components/crCode.directive"; //关注二维码弹框
+// export default {
+  // name: "Yuanbao",
+  // data() {
+  //   return {
+      // name: "yuanbao",
+      // conf: {},
+      // state: { page: 1, tab: 1, award: false },
+      // notes: [
+      //   "1. 每个包装打开后扫描二维码，每个二维码仅能参加一次活动。",
+      //   "2. 每位用户每场仅限参与1次，活动倒计时完毕后，活动页面将开始掉落红包，点击红包中奖。",
+      //   "3. 奖品为鼓励金，金额自1.88-188.00元不等，随机抽取红包中奖。",
+      //   "4. 每场红包雨120分钟，120分钟后活动结束。",
+      //   "5. 鼓励金发放完毕后红包雨活动将结束。",
+      //   "6. 红包领取成功后直接转账到微信钱包，到账时间为点击领取后30分钟之内。",
+      //   "7. 本次活动在法律法规范围内的解释权归属于本平台所有。"
+      // ],
+      // actCode: getQueryString("actCode"),
+      // valiadateFlag: false,
+      // constants: {
+  //       title: "提示",
+  //       msg: "",
+  //       type: "alert",
+  //       text: ["确定"]
+  //     },
+  //     codeFlag: false,
+  //     canDraw: false,
+  //     myAward: null,
+  //     ticket: "",
+  //     drawData: "",
+  //     message: ""
+  //   };
+  // },
+  // components: {
+  //   alertDialog,
+  //   valiadateAlert,
+  //   crCode
+  // },
+  // created() {
+  //   this.Fetch.get("/act/info", { actCode: this.actCode }).then(res => {
+  //     if (res.code == "200") {
+  //       this.actDesc = res.data.actDesc;
+  //       this.Fetch.get(res.data.confUrl).then(res => {
+  //         this.conf = res;
+  //         document.title = this.conf.title;
+  //       });
+  //     }
+  //   });
+  // },
+  // mounted: function() {
+  //   setTimeout(() => {
+  //     this.getJinfo();
+  //   }, 100);
+  // },
+  // computed: {},
+  // methods: {
+    // getJinfo() {
+    //   let _this = this;
+    //   this.Fetch.get("/act/pr/jinfo", { actCode: this.actCode }).then(res => {
+    //     if (res.code === "200") {
+    //       if (!res.data.canDraw) {
+    //         this.$refs.alert.show = true;
+    //         this.constants = {
+    //           title: "提示",
+    //           msg: res.data.showMsg,
+    //           type: "alert",
+          //     text: ["知道了！"]
+          //   };
+          //   this.canDraw = false;
+          //   return;
+          // }
+          // if (res.data.drawed) {
+          //   this.$refs.alert.show = true;
+          //   this.constants = {
+    //           title: "提示",
+    //           msg: res.data.showMsg,
+    //           type: "alert",
+    //           text: ["知道了！"]
+    //         };
+    //         this.canDraw = false;
+    //         return;
+    //       }
+    //       this.canDraw = true;
+    //       this.ticket = res.data.ticket;
+    //     }
+    //   });
+    // },
+    // draw(who) {
+    //   if (!this.canDraw) {
         //不要贪心哦\n此二维码已参加活动，请重新扫码
-        this.$refs.alert.show = true;
-        this.constants = {
-          title: "提示",
-          msg: "不要贪心哦\n此二维码已参加活动，请重新扫码",
-          type: "alert",
-          text: ["知道了！"],
-          flag: 1
-        };
-        return;
-      }
-      this.Fetch.get("/act/pr/draw", {
-        actCode: this.actCode,
-        ticket: this.ticket
-      }).then(res => {
+      //   this.$refs.alert.show = true;
+      //   this.constants = {
+      //     title: "提示",
+      //     msg: "不要贪心哦\n此二维码已参加活动，请重新扫码",
+      //     type: "alert",
+      //     text: ["知道了！"],
+      //     flag: 1
+      //   };
+      //   return;
+      // }
+      // this.Fetch.get("/act/pr/draw", {
+      //   actCode: this.actCode,
+      //   ticket: this.ticket
+      // }).then(res => {
         // code是200data是null    谢谢参与
-        if (res.code === "200" && res.data === null) {
-          this.state.page = 3;
-          this.state.award = false;
-          return;
-        }
-        if (res.code === "200") {
-          this.drawData = res.data;
-          this.state.page = 3;
-          this.state.award = true;
-        }
-        if (res.code === "500") {
-          this.getJinfo();
-        }
-      });
-    },
-    getMyAward: function() {
-      this.state.tab = 2;
+        // if (res.code === "200" && res.data === null) {
+        //   this.state.page = 3;
+        //   this.state.award = false;
+        //   return;
+        // }
+      //   if (res.code === "200") {
+      //     this.drawData = res.data;
+      //     this.state.page = 3;
+      //     this.state.award = true;
+      //   }
+      //   if (res.code === "500") {
+      //     this.getJinfo();
+      //   }
+      // });
+    // },
+    // getMyAward: function() {
+    //   this.state.tab = 2;
       // 用户奖品信息
-      this.Fetch.get("/awd/actawd/list", {
-        actCode: this.actCode,
-        recordId: 0
-      }).then(res => {
-        if (res.code === "200") {
-          this.myAward = res.data;
-        }
-      });
-    },
-    gotoReceive: function(params) {
-      if (params.awdStatus === 0) {
-        this.drawData = params;
-        if (params.awdType != 1) {
-          this.getGift(params);
-        } else {
-          window.location.href =
-            "../general/order-preview.html?uaId=" + params.uaId;
-        }
-        return;
-      }
-      if (params.awdStatus === 1) {
-        window.location.href =
-          "../general/gift-detail.html?uaId=" + params.uaId;
-        return;
-      }
-    },
-    getGift: function(params) {
+    //   this.Fetch.get("/awd/actawd/list", {
+    //     actCode: this.actCode,
+    //     recordId: 0
+    //   }).then(res => {
+    //     if (res.code === "200") {
+    //       this.myAward = res.data;
+    //     }
+    //   });
+    // },
+    // gotoReceive: function(params) {
+      // if (params.awdStatus === 0) {
+      //   this.drawData = params;
+      //   if (params.awdType != 1) {
+      //     this.getGift(params);
+      //   } else {
+      //     window.location.href =
+      //       "../general/order-preview.html?uaId=" + params.uaId;
+      //   }
+      //   return;
+      // }
+    //   if (params.awdStatus === 1) {
+    //     window.location.href =
+    //       "../general/gift-detail.html?uaId=" + params.uaId;
+    //     return;
+    //   }
+    // },
+    // getGift: function(params) {
       //awardType 3红包  6积分    1实物
-      if (params.awdType == 1) {
-        window.location.href = "../general/order-preview.html";
-      }
-      if (params.awdType != 1) {
-        this.Fetch.post("/awd/rcv/virtual", { uaId: params.uaId }).then(res => {
+      // if (params.awdType == 1) {
+      //   window.location.href = "../general/order-preview.html";
+      // }
+      // if (params.awdType != 1) {
+        // this.Fetch.post("/awd/rcv/virtual", { uaId: params.uaId }).then(res => {
           //code 为701时需要绑定手机号
-          if (res.code === "701") {
-            this.state.page = 1;
-            this.valiadateFlag = true;
-            return;
-          }
+          // if (res.code === "701") {
+          //   this.state.page = 1;
+          //   this.valiadateFlag = true;
+          //   return;
+          // }
           //code为700时需要关注公号
-          if (res.code === "700") {
-            this.state.page = 1;
-            this.codeImg = res.data.qrUrl;
-            this.codeFlag = true;
-            return;
-          }
-          if (res.code === "200") {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: "领取成功",
-              type: "alert",
-              text: ["确定"],
-              flag: 1
-            };
-          } else {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: res.msg,
-              type: "alert",
-              text: ["确定"],
-              flag: 1
-            };
-          }
-        });
-      } else {
+      //     if (res.code === "700") {
+      //       this.state.page = 1;
+      //       this.codeImg = res.data.qrUrl;
+      //       this.codeFlag = true;
+      //       return;
+      //     }
+      //     if (res.code === "200") {
+      //       this.$refs.alert.show = true;
+      //       this.constants = {
+      //         title: "提示",
+      //         msg: "领取成功",
+      //         type: "alert",
+      //         text: ["确定"],
+      //         flag: 1
+      //       };
+      //     } else {
+      //       this.$refs.alert.show = true;
+      //       this.constants = {
+      //         title: "提示",
+      //         msg: res.msg,
+      //         type: "alert",
+      //         text: ["确定"],
+      //         flag: 1
+      //       };
+      //     }
+      //   });
+      // } else {
         // 中实物跳转
-        alert("中实物");
-      }
-    },
-    alertFn() {
-      this.canDraw = false;
-      this.$refs.alert.show = false;
-    },
-    handleGetCode: function(m) {
-      var phone = m.phone;
-      this.Fetch.post("/user/bind/svcode", { mobile: phone }).then(res => {
-        if (res.code === "200") {
-          console.log("发送成功");
-        } else {
-          this.$refs.alert.show = true;
-          this.constants = {
-            title: "提示",
-            msg: res.msg,
-            type: "alert",
-            text: ["确定"]
-          };
-        }
-      });
-    },
-    handleSubmitCode: function(c) {
-      var phone = c.phone;
-      var code = c.code;
-      this.Fetch.post("/user/bind/mobile", { mobile: phone, vcode: code }).then(
-        res => {
-          if (res.code === "200") {
-            console.log("验证成功");
-            this.valiadateFlag = false;
-            this.getGift(this.drawData);
-          } else {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: res.msg,
-              type: "alert",
-              text: ["确定"]
-            };
-          }
-        }
-      );
-    },
-    handleCannelBtn: function() {
-      this.valiadateFlag = false;
-    }
-  }
-};
+    //     alert("中实物");
+    //   }
+    // },
+    // alertFn() {
+    //   this.canDraw = false;
+    //   this.$refs.alert.show = false;
+    // },
+    // handleGetCode: function(m) {
+    //   var phone = m.phone;
+    //   this.Fetch.post("/user/bind/svcode", { mobile: phone }).then(res => {
+    //     if (res.code === "200") {
+    //       console.log("发送成功");
+    //     } else {
+    //       this.$refs.alert.show = true;
+    //       this.constants = {
+    //         title: "提示",
+    //         msg: res.msg,
+    //         type: "alert",
+    //         text: ["确定"]
+    //       };
+    //     }
+    //   });
+    // },
+    // handleSubmitCode: function(c) {
+    //   var phone = c.phone;
+    //   var code = c.code;
+    //   this.Fetch.post("/user/bind/mobile", { mobile: phone, vcode: code }).then(
+    //     res => {
+    //       if (res.code === "200") {
+    //         console.log("验证成功");
+    //         this.valiadateFlag = false;
+    //         this.getGift(this.drawData);
+    //       } else {
+    //         this.$refs.alert.show = true;
+    //         this.constants = {
+    //           title: "提示",
+    //           msg: res.msg,
+    //           type: "alert",
+    //           text: ["确定"]
+    //         };
+    //       }
+    //     }
+    //   );
+    // },
+    // handleCannelBtn: function() {
+    //   this.valiadateFlag = false;
+    // }
+  // }
+// };
 </script>
 <style lang="scss">
-$tabBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/yuanbao-tab-bg.png";
+/* $tabBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/yuanbao-tab-bg.png";
 $tabConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/btn-gray@2x.png";
 $rightArrow: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/right-arrow.png";
-$noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.png";
-.page {
+$noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.png"; */
+
+/* .page {
   position: absolute;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
-  & img {
+  img {
     position: absolute;
   }
   .close {
@@ -344,15 +345,15 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
     margin-top: 120px;
     margin-left: 613px;
   }
-}
-.page-cover {
+} */
+/* .page-cover {
   background: rgba(0, 0, 0, 0.8);
-}
-.page1 {
-  & .bg {
+} */
+/* .page1 {
+  .bg {
     position: absolute;
     height: 1210px;
-    // object-fit: cover;
+    object-fit: cover;
   }
 
   .title {
@@ -395,8 +396,8 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
     max-height: 144px;
     transform: translate(547px, 604px);
   }
-}
-.page2 {
+} */
+/* .page2 {
   padding: 0 46px;
   box-sizing: border-box;
   .page-tab {
@@ -456,7 +457,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
       }
     }
     .award-container {
-      & img {
+      img {
         position: static;
       }
       .award-item {
@@ -479,7 +480,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
             padding: 6px;
             box-sizing: border-box;
             margin: auto;
-            & img {
+            img {
               max-width: 100%;
               max-width: 100%;
             }
@@ -487,7 +488,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
           .award-info-content {
             width: 280px;
             margin: auto;
-            & h3 {
+            h3 {
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
@@ -497,7 +498,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
             .end-time {
               color: #888888;
               font-size: 18px;
-              & span:nth-of-type(2) {
+              span:nth-of-type(2) {
                 text-decoration: line-through;
               }
             }
@@ -505,7 +506,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
           .right {
             width: 60px;
             margin: auto;
-            & img {
+            img {
               width: 60px;
               height: 60px;
             }
@@ -517,7 +518,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
           display: flex;
           color: #888888;
           font-size: 18px;
-          & p:nth-of-type(2) {
+          p:nth-of-type(2) {
             width: 30%;
             color: black;
             text-align: right;
@@ -526,10 +527,10 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
       }
     }
   }
-}
-.page3 {
+} */
+/* .page3 {
   overflow: hidden;
-  & img {
+  img {
     position: static;
     display: block;
   }
@@ -546,7 +547,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
     position: absolute;
     display: flex;
     z-index: 1;
-    & img{
+    img{
       max-width: 60%;
       max-height: 100%;
       margin: auto;
@@ -558,7 +559,7 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
     left: 20px;
     width: 673px;
     height: 686px;
-    // animation: shine 1s infinite linear;
+    animation: shine 1s infinite linear;
   }
   .award-name,
   .get-award-tips,
@@ -608,5 +609,5 @@ $noteConBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/square4@2x.
       background-color: #db4839;
     }
   }
-}
+} */
 </style>
