@@ -4,7 +4,7 @@
         <carousel :banner="banner" v-if="myContent.chosedImgStyle === 'carousel'"></carousel>
         <ul class="list" v-else>
             <li v-for="(item, idx) in banner" :key="idx">
-                <a class="bannera" :href="'/yx-page/views/activity/' + (item.form === 'act-100' ? 'no1.html' : '') + '?actCode=' + item.actCode">
+                <a class="bannera" :href="'/views/activity/' + actPath[item.form] + '?actCode=' + item.actCode">
                     <img :src="item.banner" alt="">
                 </a>
             </li>
@@ -12,12 +12,13 @@
     </div>
 </template>
 <script>
-    import carousel from 'components/carousel'
+    import carousel from 'components/carousel';
     export default {
         props: ['content'],
         data () {
             return {
-                myContent: this.content
+                myContent: this.content,
+                actPath: this.actPath
             }
         },
         computed: {

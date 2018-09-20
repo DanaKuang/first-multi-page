@@ -20,7 +20,7 @@
 
         <mt-swipe :auto="4000">
             <mt-swipe-item v-for="(item, idx) in mybanner" :key="idx">
-                <a :href="'/yx-page/views/activity/' + (item.form === 'act-100' ? 'no1.html' : '') + '?actCode=' + item.actCode" class="bannera">
+                <a :href="'/views/activity/' + path[item.form] + '?actCode=' + item.actCode" class="bannera">
                     <img :src="item.banner" alt="">
                 </a>
             </mt-swipe-item>
@@ -60,10 +60,12 @@
             return {
                 mark: 0,
                 mybanner: this.banner,
-                len: this.banner.length
+                len: this.banner.length,
+                path: this.actPath.actPath
             }
         },
         created() {
+            console.log(this.path)
             // this.play();
             // this.ULwidth = 750 * (this.banner.length + 2);
         },
