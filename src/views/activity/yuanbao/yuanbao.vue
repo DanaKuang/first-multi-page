@@ -4,9 +4,9 @@
         <alert-dialog :constants='constants' ref="alert" @alertFn = 'alertFn'></alert-dialog>
         <crCode :codeImg='codeImg' v-if="codeFlag" @codeClose = "codeClose"></crCode>
         <div class="page page1">
-            <img :src="conf.img.bg.url" class="bg" alt="">
-            <img :src="conf.img.title.url" alt="" class="title">
-            <img :src="conf.img.tips.url" alt="" class="tips" @click="state.page = 2, state.tab = 1">
+            <img :src="conf && conf.img && conf.img.bg.url" class="bg" alt="">
+            <img :src="conf && conf.img && conf.img.title.url" alt="" class="title">
+            <img :src="conf && conf.img && conf.img.tips.url" alt="" class="tips" @click="state.page = 2, state.tab = 1">
             <img v-for="(item, index) in conf.img" :key="item.title" :src="item.url" alt="" v-if="['bg', 'award', 'noAward', 'tips', 'title'].indexOf(index) == -1" :class="index" @click="draw(index)">
         </div>
         <!-- 第二页 => 活动说明页 -->
@@ -81,7 +81,7 @@ export default {
   data() {
     return {
       name: "yuanbao",
-      conf: "",
+      conf: {},
       state: { page: 1, tab: 1, award: false },
       notes: [
         "1. 每个包装打开后扫描二维码，每个二维码仅能参加一次活动。",
