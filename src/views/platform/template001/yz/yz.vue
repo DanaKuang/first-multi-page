@@ -68,7 +68,7 @@
                 sessionStorage.setItem('info', JSON.stringify(result.data));
                 this.fulfilled = content.fulfilled;
                 this.unfulfilled = content.unfulfilled;
-                // delete content.fulfilled.title;
+                delete content.fulfilled.title;
                 if (result.code == 200) {
                     this.fulfilledFlag = true;
                     this.showPage(content.fulfilled, true, result.data, actlist.data);
