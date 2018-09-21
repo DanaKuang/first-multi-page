@@ -7,8 +7,10 @@ import App from './activity.vue'
 Vue.use(MintUI)
 
 import 'assets/common/base'
-import Fetch from 'lib/Fetch';
-Vue.prototype.Fetch = Fetch;
+import Fetch from 'lib/Fetch'
+import actPath from './config/path'
+Vue.prototype.Fetch = Fetch
+Vue.prototype.actPath = actPath
 
 new Vue({
     render: h => h(App)

@@ -4,14 +4,14 @@ var a_nav = [
         name: "扫码验真",
         src: require("assets/image/scan.png"),
         active_src: require("assets/image/scan.png"),
-        path: location.origin + "/yx-page/views/template001/yz.html"
+        path: location.origin + "/yx-page/views/common/yz.html"
     },
     {
         type: "activity",
         name: "活动中心",
         src: require("assets/image/activity.png"),
         active_src: require("assets/image/activity.png"),
-        path: location.origin + "/yx-page/views/template001/activity.html"
+        path: location.origin + "/yx-page/views/common/activity.html"
     },
     {
         type: "shop",
