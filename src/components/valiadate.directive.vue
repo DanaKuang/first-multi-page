@@ -22,21 +22,21 @@
             </div>
 
             <!--协议政策-->
-            <agreePolicy @changeCheck="changeCheck"></agreePolicy>
+            <!-- <agreePolicy @changeCheck="changeCheck"></agreePolicy> -->
 
             <button class="verify" @click="handleSubmit" :disabled="confirmBtnStatus">确认</button>
         </div>
     </div>
 </template>
 <script type="text/javascript">
-    import agreePolicy from "components/agreePolicy.directive.vue"
+    // import agreePolicy from "components/agreePolicy.directive.vue"
 
     export default {
         props: [
             'msg'
         ],
         components: {
-          agreePolicy
+        //   agreePolicy
         },
         data() {
             return {

@@ -1,6 +1,6 @@
 <template>
     <div>
-      <valiadate-alert v-if="valiadateFlag" @getcode="handleGetCode" @submitcode="handleSubmitCode" :msg="message" @handlecannel="handleCannelBtn"></valiadate-alert>
+      <validate-alert v-if="valiadateFlag" @getcode="handleGetCode" @submitcode="handleSubmitCode" :msg="message" @handlecannel="handleCannelBtn"></validate-alert>
         <alert-dialog :constants='constants' ref="alert" @alertFn = 'alertFn'></alert-dialog>
         <crCode :codeImg='codeImg' v-if="codeFlag" @codeClose = "codeClose"></crCode>
         <div class="page page1">
@@ -73,231 +73,209 @@
 //ACT-2PE2C11NS2S5
 import { getQueryString } from "lib/utils.js";
 import $ from "jquery";
-import valiadateAlert from "components/valiadate.directive"; //手机号弹框
+import validateAlert from "components/valiadate.directive"; //手机号弹框
 import alertDialog from "components/alert.directive"; //alert confirm 弹框
 import crCode from "components/crCode.directive"; //关注二维码弹框
-export default {
-  name: "Yuanbao",
-  data() {
-    return {
-      name: "yuanbao",
-      conf: "",
-      state: { page: 1, tab: 1, award: false },
-      notes: [
-        "1. 每个包装打开后扫描二维码，每个二维码仅能参加一次活动。",
-        "2. 每位用户每场仅限参与1次，活动倒计时完毕后，活动页面将开始掉落红包，点击红包中奖。",
-        "3. 奖品为鼓励金，金额自1.88-188.00元不等，随机抽取红包中奖。",
-        "4. 每场红包雨120分钟，120分钟后活动结束。",
-        "5. 鼓励金发放完毕后红包雨活动将结束。",
-        "6. 红包领取成功后直接转账到微信钱包，到账时间为点击领取后30分钟之内。",
-        "7. 本次活动在法律法规范围内的解释权归属于本平台所有。"
-      ],
-      actCode: getQueryString("actCode"),
-      valiadateFlag: false,
-      constants: {
-        title: "提示",
-        msg: "",
-        type: "alert",
-        text: ["确定"]
-      },
-      codeFlag: false,
-      canDraw: false,
-      myAward: null,
-      ticket: "",
-      drawData: "",
-      message: ""
-    };
-  },
-  components: {
-    alertDialog,
-    valiadateAlert,
-    crCode
-  },
-  created() {
-    this.Fetch.get("/act/info", { actCode: this.actCode }).then(res => {
-      if (res.code == "200") {
-        this.actDesc = res.data.actDesc;
-        this.Fetch.get(res.data.confUrl).then(res => {
-          this.conf = res;
-          document.title = this.conf.title;
-        });
-      }
-    });
-  },
-  mounted: function() {
-    setTimeout(() => {
-      this.getJinfo();
-    }, 100);
-  },
-  computed: {},
-  methods: {
-    getJinfo() {
-      let _this = this;
-      this.Fetch.get("/act/pr/jinfo", { actCode: this.actCode }).then(res => {
-        if (res.code === "200") {
-          if (!res.data.canDraw) {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: res.data.showMsg,
-              type: "alert",
-              text: ["知道了！"]
-            };
-            this.canDraw = false;
-            return;
-          }
-          if (res.data.drawed) {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: res.data.showMsg,
-              type: "alert",
-              text: ["知道了！"]
-            };
-            this.canDraw = false;
-            return;
-          }
-          this.canDraw = true;
-          this.ticket = res.data.ticket;
-        }
-      });
-    },
-    draw(who) {
-      if (!this.canDraw) {
-        //不要贪心哦\n此二维码已参加活动，请重新扫码
-        this.$refs.alert.show = true;
-        this.constants = {
+  export default {
+    data() {
+      return {
+        conf: "",
+        state: { page: 1, tab: 1, award: false },
+        notes: [
+          "1. 每个包装打开后扫描二维码，每个二维码仅能参加一次活动。",
+          "2. 每位用户每场仅限参与1次，活动倒计时完毕后，活动页面将开始掉落红包，点击红包中奖。",
+          "3. 奖品为鼓励金，金额自1.88-188.00元不等，随机抽取红包中奖。",
+          "4. 每场红包雨120分钟，120分钟后活动结束。",
+          "5. 鼓励金发放完毕后红包雨活动将结束。",
+          "6. 红包领取成功后直接转账到微信钱包，到账时间为点击领取后30分钟之内。",
+          "7. 本次活动在法律法规范围内的解释权归属于本平台所有。"
+        ],
+        actCode: getQueryString("actCode"),
+        valiadateFlag: false,
+        constants: {
           title: "提示",
-          msg: "不要贪心哦\n此二维码已参加活动，请重新扫码",
+          msg: "",
           type: "alert",
-          text: ["知道了！"],
-          flag: 1
-        };
-        return;
-      }
-      this.Fetch.get("/act/pr/draw", {
-        actCode: this.actCode,
-        ticket: this.ticket
-      }).then(res => {
-        // code是200data是null    谢谢参与
-        if (res.code === "200" && res.data === null) {
-          this.state.page = 3;
-          this.state.award = false;
-          return;
-        }
-        if (res.code === "200") {
-          this.drawData = res.data;
-          this.state.page = 3;
-          this.state.award = true;
-        }
-        if (res.code === "500") {
-          this.getJinfo();
+          text: ["确定"]
+        },
+        codeFlag: false,
+        canDraw: false,
+        myAward: null,
+        ticket: "",
+        drawData: "",
+        message: ""
+      };
+    },
+    components: {
+      alertDialog,
+      validateAlert,
+      crCode
+    },
+    created() {
+      this.Fetch.get("/act/info", { actCode: this.actCode }).then(res => {
+        if (res.code == "200") {
+          this.actDesc = res.data.actDesc;
+          this.Fetch.get(res.data.confUrl).then(res => {
+            this.conf = res;
+            document.title = this.conf.title;
+          });
         }
       });
     },
-    getMyAward: function() {
-      this.state.tab = 2;
-      // 用户奖品信息
-      this.Fetch.get("/awd/actawd/list", {
-        actCode: this.actCode,
-        recordId: 0
-      }).then(res => {
-        if (res.code === "200") {
-          this.myAward = res.data;
-        }
-      });
+    mounted: function() {
+      setTimeout(() => {
+        this.getJinfo();
+      }, 100);
     },
-    gotoReceive: function(params) {
-      if (params.awdStatus === 0) {
-        this.drawData = params;
-        if (params.awdType != 1) {
-          this.getGift(params);
-        } else {
-          window.location.href =
-            "../general/order-preview.html?uaId=" + params.uaId;
-        }
-        return;
-      }
-      if (params.awdStatus === 1) {
-        window.location.href =
-          "../general/gift-detail.html?uaId=" + params.uaId;
-        return;
-      }
-    },
-    getGift: function(params) {
-      //awardType 3红包  6积分    1实物
-      if (params.awdType == 1) {
-        window.location.href = "../general/order-preview.html";
-      }
-      if (params.awdType != 1) {
-        this.Fetch.post("/awd/rcv/virtual", { uaId: params.uaId }).then(res => {
-          //code 为701时需要绑定手机号
-          if (res.code === "701") {
-            this.state.page = 1;
-            this.valiadateFlag = true;
-            return;
-          }
-          //code为700时需要关注公号
-          if (res.code === "700") {
-            this.state.page = 1;
-            this.codeImg = res.data.qrUrl;
-            this.codeFlag = true;
-            return;
-          }
+    computed: {},
+    methods: {
+      getJinfo() {
+        let _this = this;
+        this.Fetch.get("/act/pr/jinfo", { actCode: this.actCode }).then(res => {
           if (res.code === "200") {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: "领取成功",
-              type: "alert",
-              text: ["确定"],
-              flag: 1
-            };
-          } else {
-            this.$refs.alert.show = true;
-            this.constants = {
-              title: "提示",
-              msg: res.msg,
-              type: "alert",
-              text: ["确定"],
-              flag: 1
-            };
+            if (!res.data.canDraw) {
+              this.$refs.alert.show = true;
+              this.constants = {
+                title: "提示",
+                msg: res.data.showMsg,
+                type: "alert",
+                text: ["知道了！"]
+              };
+              this.canDraw = false;
+              return;
+            }
+            if (res.data.drawed) {
+              this.$refs.alert.show = true;
+              this.constants = {
+                title: "提示",
+                msg: res.data.showMsg,
+                type: "alert",
+                text: ["知道了！"]
+              };
+              this.canDraw = false;
+              return;
+            }
+            this.canDraw = true;
+            this.ticket = res.data.ticket;
           }
         });
-      } else {
-        // 中实物跳转
-        alert("中实物");
-      }
-    },
-    alertFn() {
-      this.canDraw = false;
-      this.$refs.alert.show = false;
-    },
-    handleGetCode: function(m) {
-      var phone = m.phone;
-      this.Fetch.post("/user/bind/svcode", { mobile: phone }).then(res => {
-        if (res.code === "200") {
-          console.log("发送成功");
-        } else {
+      },
+      draw(who) {
+        if (!this.canDraw) {
+          //不要贪心哦\n此二维码已参加活动，请重新扫码
           this.$refs.alert.show = true;
           this.constants = {
             title: "提示",
-            msg: res.msg,
+            msg: "不要贪心哦\n此二维码已参加活动，请重新扫码",
             type: "alert",
-            text: ["确定"]
+            text: ["知道了！"],
+            flag: 1
           };
+          return;
         }
-      });
-    },
-    handleSubmitCode: function(c) {
-      var phone = c.phone;
-      var code = c.code;
-      this.Fetch.post("/user/bind/mobile", { mobile: phone, vcode: code }).then(
-        res => {
+        this.Fetch.get("/act/pr/draw", {
+          actCode: this.actCode,
+          ticket: this.ticket
+        }).then(res => {
+          // code是200data是null    谢谢参与
+          if (res.code === "200" && res.data === null) {
+            this.state.page = 3;
+            this.state.award = false;
+            return;
+          }
           if (res.code === "200") {
-            console.log("验证成功");
-            this.valiadateFlag = false;
-            this.getGift(this.drawData);
+            this.drawData = res.data;
+            this.state.page = 3;
+            this.state.award = true;
+          }
+          if (res.code === "500") {
+            this.getJinfo();
+          }
+        });
+      },
+      getMyAward: function() {
+        this.state.tab = 2;
+        // 用户奖品信息
+        this.Fetch.get("/awd/actawd/list", {
+          actCode: this.actCode,
+          recordId: 0
+        }).then(res => {
+          if (res.code === "200") {
+            this.myAward = res.data;
+          }
+        });
+      },
+      gotoReceive: function(params) {
+        if (params.awdStatus === 0) {
+          this.drawData = params;
+          if (params.awdType != 1) {
+            this.getGift(params);
+          } else {
+            window.location.href =
+              "../general/order-preview.html?uaId=" + params.uaId;
+          }
+          return;
+        }
+        if (params.awdStatus === 1) {
+          window.location.href =
+            "../general/gift-detail.html?uaId=" + params.uaId;
+          return;
+        }
+      },
+      getGift: function(params) {
+        //awardType 3红包  6积分    1实物
+        if (params.awdType == 1) {
+          window.location.href = "../general/order-preview.html";
+        }
+        if (params.awdType != 1) {
+          this.Fetch.post("/awd/rcv/virtual", { uaId: params.uaId }).then(res => {
+            //code 为701时需要绑定手机号
+            if (res.code === "701") {
+              this.state.page = 1;
+              this.valiadateFlag = true;
+              return;
+            }
+            //code为700时需要关注公号
+            if (res.code === "700") {
+              this.state.page = 1;
+              this.codeImg = res.data.qrUrl;
+              this.codeFlag = true;
+              return;
+            }
+            if (res.code === "200") {
+              this.$refs.alert.show = true;
+              this.constants = {
+                title: "提示",
+                msg: "领取成功",
+                type: "alert",
+                text: ["确定"],
+                flag: 1
+              };
+            } else {
+              this.$refs.alert.show = true;
+              this.constants = {
+                title: "提示",
+                msg: res.msg,
+                type: "alert",
+                text: ["确定"],
+                flag: 1
+              };
+            }
+          });
+        } else {
+          // 中实物跳转
+          alert("中实物");
+        }
+      },
+      alertFn() {
+        this.canDraw = false;
+        this.$refs.alert.show = false;
+      },
+      handleGetCode: function(m) {
+        var phone = m.phone;
+        this.Fetch.post("/user/bind/svcode", { mobile: phone }).then(res => {
+          if (res.code === "200") {
+            console.log("发送成功");
           } else {
             this.$refs.alert.show = true;
             this.constants = {
@@ -307,14 +285,34 @@ export default {
               text: ["确定"]
             };
           }
-        }
-      );
-    },
-    handleCannelBtn: function() {
-      this.valiadateFlag = false;
+        });
+      },
+      handleSubmitCode: function(c) {
+        var phone = c.phone;
+        var code = c.code;
+        this.Fetch.post("/user/bind/mobile", { mobile: phone, vcode: code }).then(
+          res => {
+            if (res.code === "200") {
+              console.log("验证成功");
+              this.valiadateFlag = false;
+              this.getGift(this.drawData);
+            } else {
+              this.$refs.alert.show = true;
+              this.constants = {
+                title: "提示",
+                msg: res.msg,
+                type: "alert",
+                text: ["确定"]
+              };
+            }
+          }
+        );
+      },
+      handleCannelBtn: function() {
+        this.valiadateFlag = false;
+      }
     }
-  }
-};
+  };
 </script>
 <style lang="scss">
 $tabBg: "https://weiopn.oss-cn-beijing.aliyuncs.com/new_platform/yuanbao-tab-bg.png";
