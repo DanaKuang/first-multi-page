@@ -65,7 +65,6 @@
             }
         },
         created() {
-            console.log(this.path)
             // this.play();
             // this.ULwidth = 750 * (this.banner.length + 2);
         },
