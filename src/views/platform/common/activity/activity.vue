@@ -3,7 +3,7 @@
     <div class="actList" v-if="hasActivity" v-cloak>
       <ul>
         <li class="act" v-for="item in actList" :key="item.id">
-          <a :href="'/views/activity/' + (item.form === 'act-100' ? 'no1.html' : '') + '?actCode=' + item.actCode">
+          <a :href="'/views/activity/' + item.actPath + '?actCode=' + item.actCode">
             <div class="act-con">
               <p class="title">{{item.actName}}</p>
               <p class="desc">{{item.actDesc}}</p>
@@ -46,9 +46,17 @@ export default {
   },
   created() {
     Promise.all([this.getActList()]).then(([actList]) => {
+      const actPath = this.actPath.actPath
       if (actList.code === '200') {
           console.log(actList)
         if (actList.data.length > 0) {
+          actList.data.forEach(item => {
+            for (let k in actPath) {
+              if (item.form === k) {
+                item.actPath = actPath[k]
+              }
+            }
+          })
           this.actList = actList.data
           this.hasActivity = true
         } else {
