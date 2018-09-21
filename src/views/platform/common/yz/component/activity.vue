@@ -4,7 +4,7 @@
         <carousel :banner="banner" v-if="myContent.chosedImgStyle === 'carousel'"></carousel>
         <ul class="list" v-else>
             <li v-for="(item, idx) in banner" :key="idx">
-                <a class="bannera" :href="'/views/activity/' + actPath[item.form] + '?actCode=' + item.actCode">
+                <a class="bannera" :href="'/yx-page/views/activity/' + actPath[item.form] + '?actCode=' + item.actCode">
                     <img :src="item.banner" alt="">
                 </a>
             </li>

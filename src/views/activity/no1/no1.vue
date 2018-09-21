@@ -177,7 +177,7 @@ import crCode from 'components/crCode.directive'                //关注二维�
                             "msg": res.msg,
                             "type": "alert",
                             "text": ["确定"]
-                        } 
+                        }
                     }
                 })
             },

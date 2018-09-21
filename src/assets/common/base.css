@@ -56,3 +56,10 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 	border: 0;
 	outline: 0; 
 }
+
+/*滚动条*/
+::-webkit-scrollbar {
+  width: 0rem;
+  height: 0rem;
+  display: none;
+}
