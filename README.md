@@ -1,21 +1,32 @@
-构建基于vue的多页应用
+构建基于vue.js开发，用webpack4打包生成的多页面应用程序。
 
-思考打包生成的目录：
--views
-    - 路径
-        - 引用各自页面的js
-        - 长缓存公共的manifest和vendor
--js
-    - 一一对应的路径
--css
-    - 一一对应的路径
-
-
-活动模板的对应
-"act-100" 对应 no1.html 翻牌子
-
-
-1. 扫码落地、个人中心、活动中心
-template001
-
-
+开发目录结构：(务必遵循)
+-src 开发目录
+    -views 
+        - platform 微平台
+            - common 通用
+                - component 各个页面可能用到的公用组件
+                - yz 扫码验真 
+                    - yz.html
+                    - yz.js
+                    - yz.vue
+                - person 个人中心
+                    - person.html
+                    - person.js
+                    - person.vue
+                - activity 活动中心
+                    - activity.html
+                    - activity.js
+                    - activity.vue
+            - 特殊（暂未开发，目录结构同common）
+                - 扫码验真
+                - 个人中心
+                - 活动中心
+        - activity 活动
+            - 翻牌子
+            - 点元宝
+            - and so on
+        - general 通用页面
+            - 订单预览页 
+            - 订单详情
+            - and so on
